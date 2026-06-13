@@ -239,7 +239,7 @@ def dashboard(start_response, user):
         for name, amount in balances.items()
     )
     plan_rows = "".join(
-        f"<tr><td>{esc(payer)}</td><td>{esc(receiver)}</td><td class='right'>₹{amount}</td></tr>"
+        f"<tr><td>{esc(payer)}</td><td>{esc(receiver)}</td><td class='right'>INR {amount}</td></tr>"
         for payer, receiver, amount in plan
     ) or "<tr><td colspan='3'>No settlement needed yet.</td></tr>"
     content = f"""
@@ -320,7 +320,7 @@ def import_report(start_response, user, import_run_id: int):
 def expenses_page(start_response, user):
     rows = ""
     for expense in load_expenses():
-        splits = ", ".join(f"{s['member_name']}: ₹{s['amount_inr']}" for s in load_expense_splits(expense["id"]))
+        splits = ", ".join(f"{s['member_name']}: INR {s['amount_inr']}" for s in load_expense_splits(expense["id"]))
         actions = ""
         if expense["status"] == "needs_review":
             actions = f"""
@@ -330,13 +330,13 @@ def expenses_page(start_response, user):
         rows += f"""
         <tr>
           <td>{expense['source_row']}</td><td>{esc(expense['expense_date'])}</td><td>{esc(expense['description'])}</td>
-          <td>{esc(expense['paid_by'])}</td><td class="right">₹{esc(expense['amount_inr'])}</td>
+          <td>{esc(expense['paid_by'])}</td><td class="right">INR {esc(expense['amount_inr'])}</td>
           <td>{esc(splits)}</td><td class="status-{esc(expense['status'])}">{esc(expense['status'])}</td>
           <td><a href="/expenses/{expense['id']}/trace">Trace</a> {actions}</td>
         </tr>
         """
     payment_rows = "".join(
-        f"<tr><td>{p['source_row']}</td><td>{esc(p['payment_date'])}</td><td>{esc(p['payer'])}</td><td>{esc(p['recipient'])}</td><td class='right'>₹{esc(p['amount_inr'])}</td><td>{esc(p['description'])}</td></tr>"
+        f"<tr><td>{p['source_row']}</td><td>{esc(p['payment_date'])}</td><td>{esc(p['payer'])}</td><td>{esc(p['recipient'])}</td><td class='right'>INR {esc(p['amount_inr'])}</td><td>{esc(p['description'])}</td></tr>"
         for p in load_payments()
     )
     content = f"""
@@ -353,14 +353,14 @@ def expenses_page(start_response, user):
 def trace_page(start_response, user, expense_id: int):
     trace = expense_trace(expense_id)
     expense = trace["expense"]
-    split_rows = "".join(f"<tr><td>{esc(s['member_name'])}</td><td class='right'>₹{esc(s['amount_inr'])}</td></tr>" for s in trace["splits"])
+    split_rows = "".join(f"<tr><td>{esc(s['member_name'])}</td><td class='right'>INR {esc(s['amount_inr'])}</td></tr>" for s in trace["splits"])
     anomaly_rows = "".join(
         f"<tr><td>{esc(a['code'])}</td><td>{esc(a['message'])}</td><td>{esc(a['action'])}</td></tr>" for a in trace["anomalies"]
     ) or "<tr><td colspan='3'>No anomalies on this row.</td></tr>"
     content = f"""
     <section class="band"><h2>Trace CSV row {expense['source_row']}</h2><p class="muted">{esc(expense['description'])}</p></section>
     <div class="grid">
-      <div class="card"><h3>Expense</h3><p>Paid by {esc(expense['paid_by'])}: ₹{esc(expense['amount_inr'])}</p><p>Status: {esc(expense['status'])}</p></div>
+      <div class="card"><h3>Expense</h3><p>Paid by {esc(expense['paid_by'])}: INR {esc(expense['amount_inr'])}</p><p>Status: {esc(expense['status'])}</p></div>
       <div class="card"><h3>Split math</h3><table><tr><th>Member</th><th class="right">Charged</th></tr>{split_rows}</table></div>
     </div>
     <h3>Importer decisions</h3><table><tr><th>Code</th><th>Detected problem</th><th>Action</th></tr>{anomaly_rows}</table>

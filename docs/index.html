@@ -6,105 +6,317 @@
   <title>LedgerLens Expenses</title>
   <style>
     :root {
-      --ink: #17202a;
-      --muted: #5d6875;
-      --line: #d9dee5;
-      --soft: #f5f7fa;
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --ink: #16202a;
+      --muted: #667085;
+      --line: #d8dde6;
       --brand: #0f766e;
-      --warn: #8a4b00;
-      --bad: #9f1239;
+      --brand-weak: #e7f6f3;
+      --warn: #a15c07;
+      --warn-weak: #fff4df;
+      --bad: #b42318;
+      --bad-weak: #fff0ed;
+      --good: #067647;
+      --good-weak: #ecfdf3;
+      --shadow: 0 14px 38px rgba(16, 24, 40, .08);
     }
     * { box-sizing: border-box; }
-    body { margin: 0; color: var(--ink); font-family: Arial, Helvetica, sans-serif; background: white; }
-    header { border-bottom: 1px solid var(--line); padding: 16px 22px; display: flex; gap: 14px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-    h1 { margin: 0; font-size: 22px; }
-    h2 { margin: 0 0 8px; font-size: 20px; }
-    h3 { margin: 0 0 10px; font-size: 16px; }
-    main { max-width: 1180px; margin: 0 auto; padding: 24px; }
-    nav { display: flex; gap: 12px; flex-wrap: wrap; font-size: 14px; }
-    nav a, a { color: var(--brand); font-weight: 700; text-decoration: none; }
-    .band { background: var(--soft); border-block: 1px solid var(--line); margin: 0 -24px 20px; padding: 18px 24px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
-    .card { border: 1px solid var(--line); border-radius: 8px; padding: 16px; background: white; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      letter-spacing: 0;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .login-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(280px, 480px) 1fr;
+      background: var(--panel);
+    }
+    .login-panel { padding: 48px; display: flex; flex-direction: column; justify-content: center; }
+    .login-preview { background: var(--bg); padding: 48px; display: flex; align-items: center; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
+    .logo {
+      width: 34px; height: 34px; border-radius: 8px; background: var(--brand);
+      display: grid; place-items: center; color: white; font-weight: 900;
+    }
+    h1 { margin: 22px 0 10px; font-size: 34px; line-height: 1.08; }
+    h2 { margin: 0; font-size: 22px; }
+    h3 { margin: 0 0 12px; font-size: 15px; }
+    p { margin: 0; }
     .muted { color: var(--muted); }
+    .login-form { margin-top: 28px; display: grid; gap: 14px; }
+    label { display: grid; gap: 7px; font-size: 13px; font-weight: 700; color: #344054; }
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px 12px;
+      background: white;
+      color: var(--ink);
+    }
+    .primary {
+      border: 0;
+      border-radius: 8px;
+      background: var(--brand);
+      color: white;
+      font-weight: 800;
+      padding: 12px 14px;
+    }
+    .ghost {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--ink);
+      font-weight: 700;
+      padding: 9px 12px;
+    }
+    .app { min-height: 100vh; display: grid; grid-template-columns: 250px 1fr; }
+    aside {
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 22px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+    nav { margin-top: 26px; display: grid; gap: 6px; }
+    .nav-btn {
+      border: 0;
+      background: transparent;
+      color: #344054;
+      text-align: left;
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-weight: 750;
+    }
+    .nav-btn.active { background: var(--brand-weak); color: var(--brand); }
+    .sidebar-foot { position: absolute; left: 18px; right: 18px; bottom: 18px; display: grid; gap: 10px; }
+    main { padding: 24px 28px 36px; max-width: 1280px; width: 100%; }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .page-title { display: grid; gap: 5px; }
+    .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .grid { display: grid; gap: 16px; }
+    .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .cols { grid-template-columns: 1.1fr .9fr; align-items: start; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .kpi-label { color: var(--muted); font-size: 13px; font-weight: 700; }
+    .kpi-value { margin-top: 7px; font-size: 26px; font-weight: 850; }
+    .kpi-note { margin-top: 6px; color: var(--muted); font-size: 12px; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { border-bottom: 1px solid var(--line); padding: 9px 8px; text-align: left; vertical-align: top; }
-    th { background: var(--soft); font-size: 13px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 11px 8px; text-align: left; vertical-align: middle; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
     .right { text-align: right; }
-    .good { color: var(--brand); font-weight: 700; }
-    .bad { color: var(--bad); font-weight: 700; }
-    .warn { color: var(--warn); font-weight: 700; }
-    .pill { border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; font-size: 12px; display: inline-block; }
-    .button { display: inline-block; background: var(--brand); color: white; border-radius: 6px; padding: 10px 13px; margin-top: 8px; }
-    input { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
-    button { background: var(--brand); color: white; border: 0; border-radius: 6px; padding: 10px 13px; font-weight: 700; cursor: pointer; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .good { background: var(--good-weak); color: var(--good); }
+    .warn { background: var(--warn-weak); color: var(--warn); }
+    .bad { background: var(--bad-weak); color: var(--bad); }
+    .neutral { background: #eef2f6; color: #475467; }
+    .amount-pos { color: var(--good); font-weight: 850; }
+    .amount-neg { color: var(--bad); font-weight: 850; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .stack { display: grid; gap: 16px; }
+    .review-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .review-item:last-child { border-bottom: 0; padding-bottom: 0; }
+    .mini { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .upload-box {
+      border: 1px dashed #a9b4c2;
+      border-radius: 8px;
+      padding: 22px;
+      background: #fbfcfe;
+      display: grid;
+      gap: 12px;
+    }
     .hidden { display: none; }
+    .mobile-header { display: none; }
+    @media (max-width: 920px) {
+      .login-shell { grid-template-columns: 1fr; }
+      .login-preview { display: none; }
+      .app { grid-template-columns: 1fr; }
+      aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      nav { grid-template-columns: repeat(3, 1fr); }
+      .sidebar-foot { position: static; margin-top: 18px; }
+      .kpis, .cols { grid-template-columns: 1fr; }
+      main { padding: 18px; }
+    }
+    @media (max-width: 560px) {
+      .login-panel { padding: 28px 20px; }
+      nav { grid-template-columns: 1fr 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      table { font-size: 13px; }
+      th, td { padding: 9px 6px; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>LedgerLens Expenses</h1>
-    <nav>
-      <a href="#balances">Balances</a>
-      <a href="#report">Import Report</a>
-      <a href="https://github.com/Gavisingh12/ledgerlens-expenses">GitHub Repo</a>
-    </nav>
-  </header>
-  <main>
-    <section id="login-panel" class="band">
-      <h2>Login or create account</h2>
-      <p class="muted">GitHub Pages cannot run server-side auth, so this public demo stores the account only in this browser with <code>localStorage</code>. Enter any email and password to continue.</p>
-      <form id="login-form" class="card" style="max-width:420px">
-        <label>Email<input id="email" type="email" value="demo@example.com" required></label><br><br>
-        <label>Password<input id="password" type="password" value="demo123" required></label><br><br>
-        <button type="submit">Continue</button>
+  <section id="login-screen" class="login-shell">
+    <div class="login-panel">
+      <div class="brand"><span class="logo">L</span><span>LedgerLens Expenses</span></div>
+      <h1>Audit-ready shared expense reconciliation.</h1>
+      <p class="muted">Create an account with any email, import messy expense data, review anomalies, and settle balances clearly.</p>
+      <form id="login-form" class="login-form">
+        <label>Email<input id="email" type="email" value="demo@example.com" required></label>
+        <label>Password<input id="password" type="password" value="demo123" required></label>
+        <button class="primary" type="submit">Continue</button>
       </form>
-    </section>
-
-    <section id="app-panel" class="hidden">
-    <section class="band">
-      <h2>Shared Expense Import Demo</h2>
-      <p class="muted">Public GitHub Pages demo for the CSV anomaly workflow. The full SQLite/login app is in the repository and runs with <code>python run.py</code>. Signed in as <strong id="signed-in-email"></strong>. <a href="#" id="logout-link">Logout</a></p>
-    </section>
-
-    <section id="balances" class="grid">
-      <div class="card">
-        <h3>Per-person net</h3>
-        <table>
-          <thead><tr><th>Person</th><th class="right">Net INR</th><th>Meaning</th></tr></thead>
-          <tbody id="balances-body"></tbody>
+      <p class="mini" style="margin-top:14px">Demo account is stored in this browser.</p>
+    </div>
+    <div class="login-preview">
+      <div class="card" style="width:100%;max-width:620px">
+        <h2>Today&apos;s closeout</h2>
+        <div class="grid kpis" style="grid-template-columns:repeat(2,1fr);margin-top:18px">
+          <div><div class="kpi-label">Total spend</div><div class="kpi-value">INR 307,919.00</div></div>
+          <div><div class="kpi-label">Needs review</div><div class="kpi-value">1 row</div></div>
+        </div>
+        <table style="margin-top:18px">
+          <tr><th>Payer</th><th>Receiver</th><th class="right">Amount</th></tr>
+          <tr><td>Priya</td><td>Aisha</td><td class="right">INR 60,546.56</td></tr>
+          <tr><td>Rohan</td><td>Aisha</td><td class="right">INR 32,176.88</td></tr>
+          <tr><td>Rohan</td><td>Dev</td><td class="right">INR 23,900.68</td></tr>
         </table>
       </div>
-      <div class="card">
-        <h3>Who pays whom</h3>
-        <table>
-          <thead><tr><th>Payer</th><th>Receiver</th><th class="right">Amount</th></tr></thead>
-          <tbody id="settlements-body"></tbody>
-        </table>
-      </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="card" style="margin-top:16px">
-      <h3>Try the import report</h3>
-      <p class="muted">Upload the supplied CSV to see the static demo count rows. The backend app performs the authoritative import and stores anomalies in SQLite.</p>
-      <input type="file" id="csv-file" accept=".csv,text/csv">
-      <p id="upload-result" class="muted"></p>
-    </section>
-
-    <section id="report" style="margin-top:20px">
-      <h2>Import Report Summary</h2>
-      <div class="grid">
-        <div class="card"><h3>Total anomalies</h3><p class="bad" style="font-size:28px;margin:0">38</p></div>
-        <div class="card"><h3>Rows imported</h3><p class="good" style="font-size:28px;margin:0">38 expenses, 2 payments</p></div>
-        <div class="card"><h3>Review queue</h3><p class="warn" style="font-size:28px;margin:0">1 conflicting duplicate</p></div>
+  <section id="app-screen" class="app hidden">
+    <aside>
+      <div class="brand"><span class="logo">L</span><span>LedgerLens</span></div>
+      <nav>
+        <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+        <button class="nav-btn" data-view="import">Import</button>
+        <button class="nav-btn" data-view="review">Review Queue</button>
+        <button class="nav-btn" data-view="expenses">Expenses</button>
+        <button class="nav-btn" data-view="settlements">Settlements</button>
+        <button class="nav-btn" data-view="members">Members</button>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="mini">Signed in as<br><strong id="signed-in-email"></strong></div>
+        <button id="logout-link" class="ghost">Logout</button>
       </div>
-      <table style="margin-top:16px">
-        <thead><tr><th>CSV row</th><th>Code</th><th>Detected problem</th><th>Action taken</th></tr></thead>
-        <tbody id="anomaly-body"></tbody>
-      </table>
-    </section>
-    </section>
-  </main>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div class="page-title">
+          <h2 id="page-heading">Dashboard</h2>
+          <p id="page-subtitle" class="muted">Final balances and review status for the shared expense import.</p>
+        </div>
+        <div class="toolbar">
+          <button class="ghost" data-view-shortcut="import">Import CSV</button>
+          <a class="ghost" href="https://github.com/Gavisingh12/ledgerlens-expenses" style="text-decoration:none">GitHub</a>
+        </div>
+      </div>
+
+      <section id="dashboard" class="section active">
+        <div class="grid kpis">
+          <div class="card"><div class="kpi-label">Total included spend</div><div class="kpi-value">INR 307,919.00</div><div class="kpi-note">After exclusions and refunds</div></div>
+          <div class="card"><div class="kpi-label">Anomalies detected</div><div class="kpi-value">38</div><div class="kpi-note">All logged with actions</div></div>
+          <div class="card"><div class="kpi-label">Needs approval</div><div class="kpi-value">1</div><div class="kpi-note">Conflicting duplicate</div></div>
+          <div class="card"><div class="kpi-label">Payments recorded</div><div class="kpi-value">2</div><div class="kpi-note">Settlements separated</div></div>
+        </div>
+        <div class="grid cols" style="margin-top:16px">
+          <div class="card">
+            <h3>Recommended settlement plan</h3>
+            <table><thead><tr><th>Payer</th><th>Receiver</th><th class="right">Amount</th></tr></thead><tbody id="dashboard-settlements"></tbody></table>
+          </div>
+          <div class="card">
+            <h3>Balance summary</h3>
+            <table><thead><tr><th>Person</th><th class="right">Net</th></tr></thead><tbody id="dashboard-balances"></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <section id="import" class="section">
+        <div class="grid cols">
+          <div class="card">
+            <h3>Import expenses CSV</h3>
+            <div class="upload-box">
+              <input type="file" id="csv-file" accept=".csv,text/csv">
+              <div id="upload-result" class="muted">Upload the original CSV to preview row count and report status.</div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Import result</h3>
+            <table>
+              <tr><td>Expenses loaded</td><td class="right"><strong>38</strong></td></tr>
+              <tr><td>Payments identified</td><td class="right"><strong>2</strong></td></tr>
+              <tr><td>Anomalies logged</td><td class="right"><strong>38</strong></td></tr>
+              <tr><td>Rows pending review</td><td class="right"><strong>1</strong></td></tr>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="review" class="section">
+        <div class="card">
+          <h3>Actionable review queue</h3>
+          <div id="review-list"></div>
+        </div>
+      </section>
+
+      <section id="expenses" class="section">
+        <div class="card">
+          <div class="toolbar" style="justify-content:space-between;margin-bottom:12px">
+            <h3 style="margin:0">Expense ledger</h3>
+            <input id="expense-search" placeholder="Search expenses, payer, status" style="max-width:320px">
+          </div>
+          <table><thead><tr><th>Date</th><th>Description</th><th>Paid by</th><th class="right">Amount</th><th>Status</th></tr></thead><tbody id="expense-body"></tbody></table>
+        </div>
+      </section>
+
+      <section id="settlements" class="section">
+        <div class="grid cols">
+          <div class="card">
+            <h3>Who pays whom</h3>
+            <table><thead><tr><th>Payer</th><th>Receiver</th><th class="right">Amount</th></tr></thead><tbody id="settlements-body"></tbody></table>
+          </div>
+          <div class="card">
+            <h3>Individual balances</h3>
+            <table><thead><tr><th>Person</th><th class="right">Net balance</th><th>Meaning</th></tr></thead><tbody id="balances-body"></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <section id="members" class="section">
+        <div class="card">
+          <h3>Membership timeline</h3>
+          <table><thead><tr><th>Member</th><th>Joined</th><th>Left</th><th>Status</th></tr></thead><tbody id="member-body"></tbody></table>
+        </div>
+      </section>
+    </main>
+  </section>
+
   <script>
     const accountKey = "ledgerlens-demo-account";
     const activeKey = "ledgerlens-demo-active-email";
@@ -117,45 +329,86 @@
       ["Rohan", "Dev", 23900.68], ["Meera", "Dev", 8288.82],
       ["Meera", "Sam", 12232.50], ["Kabir", "Sam", 2490.00]
     ];
-    const anomalies = [
-      [6, "duplicate_exact", "Marina Bites dinner appears twice.", "Excluded later duplicate from balances."],
-      [13, "missing_payer", "House cleaning supplies has no payer.", "Skipped row until a payer is supplied."],
-      [14, "settlement_detected", "Rohan paid Aisha back is not an expense.", "Recorded as a payment."],
-      [20, "foreign_currency_converted", "Goa villa was logged in USD.", "Converted at 1 USD = 83 INR."],
-      [23, "guest_participant", "Kabir is not a regular flatmate.", "Kept as a guest for that row."],
-      [25, "duplicate_conflict", "Thalassa dinner has conflicting duplicate amounts.", "Excluded later row pending review."],
-      [26, "negative_amount", "Parasailing refund is negative USD.", "Treated as a refund/credit."],
-      [28, "missing_currency", "Groceries DMart has blank currency.", "Defaulted to INR and surfaced."],
-      [31, "zero_amount", "Dinner order Swiggy is zero.", "Skipped as a no-op."],
-      [36, "inactive_member_in_split", "Meera appears after moving out.", "Removed from the charge split."],
-      [38, "settlement_detected", "Sam deposit share is a payment to Aisha.", "Recorded as a payment."],
-      [42, "split_type_detail_conflict", "Equal split includes share details.", "Ignored details and split equally."]
+    const reviewItems = [
+      ["Row 25", "Duplicate conflict", "Thalassa dinner appears twice with different payer/amount.", "Excluded later row until approved."],
+      ["Row 13", "Missing payer", "House cleaning supplies has no payer.", "Skipped until payer is supplied."],
+      ["Row 36", "Inactive member", "Meera appears after move-out.", "Removed from charge split."]
     ];
+    const expenses = [
+      ["2026-02-01", "February rent", "Aisha", 48000, "included"],
+      ["2026-03-08", "Goa flights", "Aisha", 32400, "included"],
+      ["2026-03-09", "Goa villa booking", "Dev", 44820, "included"],
+      ["2026-03-11", "Thalassa dinner", "Rohan", 2450, "needs review"],
+      ["2026-04-01", "April rent", "Aisha", 48000, "included"],
+      ["2026-04-18", "Furniture for common room", "Aisha", 12000, "included"]
+    ];
+    const members = [
+      ["Aisha", "2026-02-01", "Active", "Active"],
+      ["Rohan", "2026-02-01", "Active", "Active"],
+      ["Priya", "2026-02-01", "Active", "Active"],
+      ["Meera", "2026-02-01", "2026-03-31", "Moved out"],
+      ["Sam", "2026-04-10", "Active", "Active"],
+      ["Dev", "2026-02-08", "2026-03-14", "Trip guest"]
+    ];
+    const titles = {
+      dashboard: ["Dashboard", "Final balances and review status for the shared expense import."],
+      import: ["Import", "Upload the source CSV and see the import outcome."],
+      review: ["Review Queue", "Rows that need human approval before they affect balances."],
+      expenses: ["Expenses", "Searchable ledger of included and reviewable expenses."],
+      settlements: ["Settlements", "One clean plan for who pays whom."],
+      members: ["Members", "Membership dates used during split validation."]
+    };
 
-    const money = value => "₹" + value.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    document.getElementById("balances-body").innerHTML = balances.map(([name, amount]) =>
-      `<tr><td>${name}</td><td class="right">${money(amount)}</td><td>${amount > 0 ? "gets back" : "owes"}</td></tr>`
-    ).join("");
-    document.getElementById("settlements-body").innerHTML = settlements.map(([payer, receiver, amount]) =>
-      `<tr><td>${payer}</td><td>${receiver}</td><td class="right">${money(amount)}</td></tr>`
-    ).join("");
-    document.getElementById("anomaly-body").innerHTML = anomalies.map(([row, code, problem, action]) =>
-      `<tr><td>${row}</td><td><span class="pill">${code}</span></td><td>${problem}</td><td>${action}</td></tr>`
-    ).join("");
-    document.getElementById("csv-file").addEventListener("change", async event => {
-      const file = event.target.files[0];
-      if (!file) return;
-      const text = await file.text();
-      const rows = text.trim().split(/\r?\n/).length - 1;
-      document.getElementById("upload-result").textContent = `${file.name}: ${rows} data rows read. Use the backend app for the stored SQLite import report.`;
-    });
+    const money = value => "INR " + value.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const statusBadge = status => {
+      const kind = status === "included" || status === "Active" ? "good" : status.includes("review") || status === "Moved out" ? "warn" : "neutral";
+      return `<span class="badge ${kind}">${status}</span>`;
+    };
+
+    function renderTables() {
+      const settlementRows = settlements.map(([payer, receiver, amount]) =>
+        `<tr><td>${payer}</td><td>${receiver}</td><td class="right"><strong>${money(amount)}</strong></td></tr>`
+      ).join("");
+      document.getElementById("dashboard-settlements").innerHTML = settlementRows;
+      document.getElementById("settlements-body").innerHTML = settlementRows;
+
+      document.getElementById("dashboard-balances").innerHTML = balances.map(([name, amount]) =>
+        `<tr><td>${name}</td><td class="right ${amount >= 0 ? "amount-pos" : "amount-neg"}">${money(amount)}</td></tr>`
+      ).join("");
+      document.getElementById("balances-body").innerHTML = balances.map(([name, amount]) =>
+        `<tr><td>${name}</td><td class="right ${amount >= 0 ? "amount-pos" : "amount-neg"}">${money(amount)}</td><td>${amount >= 0 ? "Receives" : "Pays"}</td></tr>`
+      ).join("");
+
+      document.getElementById("review-list").innerHTML = reviewItems.map(([row, type, issue, action]) =>
+        `<div class="review-item"><div><strong>${row} - ${type}</strong><p class="mini">${issue}</p><p class="mini">${action}</p></div><span class="badge warn">Review</span></div>`
+      ).join("");
+      document.getElementById("member-body").innerHTML = members.map(([name, joined, left, status]) =>
+        `<tr><td>${name}</td><td>${joined}</td><td>${left}</td><td>${statusBadge(status)}</td></tr>`
+      ).join("");
+      renderExpenses(expenses);
+    }
+
+    function renderExpenses(rows) {
+      document.getElementById("expense-body").innerHTML = rows.map(([date, description, paidBy, amount, status]) =>
+        `<tr><td>${date}</td><td>${description}</td><td>${paidBy}</td><td class="right">${money(amount)}</td><td>${statusBadge(status)}</td></tr>`
+      ).join("");
+    }
+
+    function showView(view) {
+      document.querySelectorAll(".section").forEach(section => section.classList.remove("active"));
+      document.getElementById(view).classList.add("active");
+      document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.view === view));
+      document.getElementById("page-heading").textContent = titles[view][0];
+      document.getElementById("page-subtitle").textContent = titles[view][1];
+    }
 
     function showApp(email) {
-      document.getElementById("login-panel").classList.add("hidden");
-      document.getElementById("app-panel").classList.remove("hidden");
+      document.getElementById("login-screen").classList.add("hidden");
+      document.getElementById("app-screen").classList.remove("hidden");
       document.getElementById("signed-in-email").textContent = email;
     }
 
+    renderTables();
     const activeEmail = localStorage.getItem(activeKey);
     if (activeEmail) showApp(activeEmail);
 
@@ -166,7 +419,7 @@
       if (!email || !password) return;
       const accounts = JSON.parse(localStorage.getItem(accountKey) || "{}");
       if (accounts[email] && accounts[email] !== password) {
-        alert("That email already exists in this browser. Use the same password or a different email.");
+        alert("This email already exists in this browser. Use the same password.");
         return;
       }
       accounts[email] = password;
@@ -174,11 +427,23 @@
       localStorage.setItem(activeKey, email);
       showApp(email);
     });
-
-    document.getElementById("logout-link").addEventListener("click", event => {
-      event.preventDefault();
+    document.getElementById("logout-link").addEventListener("click", () => {
       localStorage.removeItem(activeKey);
       location.reload();
+    });
+    document.querySelectorAll("[data-view], [data-view-shortcut]").forEach(button => {
+      button.addEventListener("click", () => showView(button.dataset.view || button.dataset.viewShortcut));
+    });
+    document.getElementById("expense-search").addEventListener("input", event => {
+      const q = event.target.value.toLowerCase();
+      renderExpenses(expenses.filter(row => row.join(" ").toLowerCase().includes(q)));
+    });
+    document.getElementById("csv-file").addEventListener("change", async event => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const rows = Math.max(0, text.trim().split(/\r?\n/).length - 1);
+      document.getElementById("upload-result").innerHTML = `<strong>${file.name}</strong> read successfully. ${rows} rows detected.`;
     });
   </script>
 </body>
