@@ -223,8 +223,8 @@ def login(environ, start_response, method: str):
     <section class="band"><h2>Login or create account</h2><p class="muted">Enter any email and password. There is no email verification for this demo.</p></section>
     {error}
     <form method="post" class="card" style="max-width:420px">
-      <label>Email<input name="email" type="email" value="aisha@example.com" required></label><br><br>
-      <label>Password<input name="password" type="password" value="demo123" required></label><br><br>
+      <label>Email<input name="email" type="email" placeholder="you@example.com" autocomplete="email" required></label><br><br>
+      <label>Password<input name="password" type="password" placeholder="Create a password" autocomplete="current-password" required></label><br><br>
       <button type="submit">Continue</button>
     </form>
     """
