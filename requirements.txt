@@ -1,0 +1,3 @@
+# The app itself uses only Python's standard library.
+# pytest is used for local verification.
+pytest==8.4.1
