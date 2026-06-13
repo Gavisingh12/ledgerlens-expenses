@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LedgerLens Expenses</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5d6875;
+      --line: #d9dee5;
+      --soft: #f5f7fa;
+      --brand: #0f766e;
+      --warn: #8a4b00;
+      --bad: #9f1239;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); font-family: Arial, Helvetica, sans-serif; background: white; }
+    header { border-bottom: 1px solid var(--line); padding: 16px 22px; display: flex; gap: 14px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    h1 { margin: 0; font-size: 22px; }
+    h2 { margin: 0 0 8px; font-size: 20px; }
+    h3 { margin: 0 0 10px; font-size: 16px; }
+    main { max-width: 1180px; margin: 0 auto; padding: 24px; }
+    nav { display: flex; gap: 12px; flex-wrap: wrap; font-size: 14px; }
+    nav a, a { color: var(--brand); font-weight: 700; text-decoration: none; }
+    .band { background: var(--soft); border-block: 1px solid var(--line); margin: 0 -24px 20px; padding: 18px 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 8px; padding: 16px; background: white; }
+    .muted { color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 9px 8px; text-align: left; vertical-align: top; }
+    th { background: var(--soft); font-size: 13px; }
+    .right { text-align: right; }
+    .good { color: var(--brand); font-weight: 700; }
+    .bad { color: var(--bad); font-weight: 700; }
+    .warn { color: var(--warn); font-weight: 700; }
+    .pill { border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; font-size: 12px; display: inline-block; }
+    .button { display: inline-block; background: var(--brand); color: white; border-radius: 6px; padding: 10px 13px; margin-top: 8px; }
+    input { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>LedgerLens Expenses</h1>
+    <nav>
+      <a href="#balances">Balances</a>
+      <a href="#report">Import Report</a>
+      <a href="https://github.com/Gavisingh12/ledgerlens-expenses">GitHub Repo</a>
+    </nav>
+  </header>
+  <main>
+    <section class="band">
+      <h2>Shared Expense Import Demo</h2>
+      <p class="muted">Public GitHub Pages demo for the CSV anomaly workflow. The full SQLite/login app is in the repository and runs with <code>python run.py</code>.</p>
+    </section>
+
+    <section id="balances" class="grid">
+      <div class="card">
+        <h3>Per-person net</h3>
+        <table>
+          <thead><tr><th>Person</th><th class="right">Net INR</th><th>Meaning</th></tr></thead>
+          <tbody id="balances-body"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Who pays whom</h3>
+        <table>
+          <thead><tr><th>Payer</th><th>Receiver</th><th class="right">Amount</th></tr></thead>
+          <tbody id="settlements-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <h3>Try the import report</h3>
+      <p class="muted">Upload the supplied CSV to see the static demo count rows. The backend app performs the authoritative import and stores anomalies in SQLite.</p>
+      <input type="file" id="csv-file" accept=".csv,text/csv">
+      <p id="upload-result" class="muted"></p>
+    </section>
+
+    <section id="report" style="margin-top:20px">
+      <h2>Import Report Summary</h2>
+      <div class="grid">
+        <div class="card"><h3>Total anomalies</h3><p class="bad" style="font-size:28px;margin:0">38</p></div>
+        <div class="card"><h3>Rows imported</h3><p class="good" style="font-size:28px;margin:0">38 expenses, 2 payments</p></div>
+        <div class="card"><h3>Review queue</h3><p class="warn" style="font-size:28px;margin:0">1 conflicting duplicate</p></div>
+      </div>
+      <table style="margin-top:16px">
+        <thead><tr><th>CSV row</th><th>Code</th><th>Detected problem</th><th>Action taken</th></tr></thead>
+        <tbody id="anomaly-body"></tbody>
+      </table>
+    </section>
+  </main>
+  <script>
+    const balances = [
+      ["Aisha", 92723.44], ["Dev", 32189.50], ["Kabir", -2490.00],
+      ["Meera", -20521.32], ["Priya", -60546.56], ["Rohan", -56077.56], ["Sam", 14722.50]
+    ];
+    const settlements = [
+      ["Priya", "Aisha", 60546.56], ["Rohan", "Aisha", 32176.88],
+      ["Rohan", "Dev", 23900.68], ["Meera", "Dev", 8288.82],
+      ["Meera", "Sam", 12232.50], ["Kabir", "Sam", 2490.00]
+    ];
+    const anomalies = [
+      [6, "duplicate_exact", "Marina Bites dinner appears twice.", "Excluded later duplicate from balances."],
+      [13, "missing_payer", "House cleaning supplies has no payer.", "Skipped row until a payer is supplied."],
+      [14, "settlement_detected", "Rohan paid Aisha back is not an expense.", "Recorded as a payment."],
+      [20, "foreign_currency_converted", "Goa villa was logged in USD.", "Converted at 1 USD = 83 INR."],
+      [23, "guest_participant", "Kabir is not a regular flatmate.", "Kept as a guest for that row."],
+      [25, "duplicate_conflict", "Thalassa dinner has conflicting duplicate amounts.", "Excluded later row pending review."],
+      [26, "negative_amount", "Parasailing refund is negative USD.", "Treated as a refund/credit."],
+      [28, "missing_currency", "Groceries DMart has blank currency.", "Defaulted to INR and surfaced."],
+      [31, "zero_amount", "Dinner order Swiggy is zero.", "Skipped as a no-op."],
+      [36, "inactive_member_in_split", "Meera appears after moving out.", "Removed from the charge split."],
+      [38, "settlement_detected", "Sam deposit share is a payment to Aisha.", "Recorded as a payment."],
+      [42, "split_type_detail_conflict", "Equal split includes share details.", "Ignored details and split equally."]
+    ];
+
+    const money = value => "₹" + value.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById("balances-body").innerHTML = balances.map(([name, amount]) =>
+      `<tr><td>${name}</td><td class="right">${money(amount)}</td><td>${amount > 0 ? "gets back" : "owes"}</td></tr>`
+    ).join("");
+    document.getElementById("settlements-body").innerHTML = settlements.map(([payer, receiver, amount]) =>
+      `<tr><td>${payer}</td><td>${receiver}</td><td class="right">${money(amount)}</td></tr>`
+    ).join("");
+    document.getElementById("anomaly-body").innerHTML = anomalies.map(([row, code, problem, action]) =>
+      `<tr><td>${row}</td><td><span class="pill">${code}</span></td><td>${problem}</td><td>${action}</td></tr>`
+    ).join("");
+    document.getElementById("csv-file").addEventListener("change", async event => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const rows = text.trim().split(/\r?\n/).length - 1;
+      document.getElementById("upload-result").textContent = `${file.name}: ${rows} data rows read. Use the backend app for the stored SQLite import report.`;
+    });
+  </script>
+</body>
+</html>

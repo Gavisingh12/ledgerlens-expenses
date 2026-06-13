@@ -112,8 +112,8 @@ def init_db() -> None:
             "INSERT OR IGNORE INTO users(name, password) VALUES(?, ?)",
             [(name, "demo123") for name in ("Aisha", "Rohan", "Priya", "Meera", "Sam", "Dev")],
         )
-        conn.execute("INSERT OR IGNORE INTO groups(name) VALUES(?)", ("Flat 4 Shared Expenses",))
-        group_id = conn.execute("SELECT id FROM groups WHERE name=?", ("Flat 4 Shared Expenses",)).fetchone()["id"]
+        conn.execute("INSERT OR IGNORE INTO groups(name) VALUES(?)", ("Household Expense Ledger",))
+        group_id = conn.execute("SELECT id FROM groups WHERE name=?", ("Household Expense Ledger",)).fetchone()["id"]
         for name, (joined, left) in MEMBERSHIPS.items():
             conn.execute("INSERT OR IGNORE INTO members(name) VALUES(?)", (name,))
             member_id = conn.execute("SELECT id FROM members WHERE name=?", (name,)).fetchone()["id"]

@@ -110,7 +110,7 @@ def layout(title: str, content: str, user: tuple[int, str] | None = None) -> byt
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>{esc(title)}</title>
+      <title>{esc(title)} | LedgerLens Expenses</title>
       <style>
         :root {{
           --ink:#17202a; --muted:#5b6673; --line:#d9dee5; --brand:#0f766e;
@@ -141,7 +141,7 @@ def layout(title: str, content: str, user: tuple[int, str] | None = None) -> byt
       </style>
     </head>
     <body>
-      <header><h1>Flat 4 Shared Expenses</h1>{nav}</header>
+      <header><h1>LedgerLens Expenses</h1>{nav}</header>
       <main>{content}</main>
     </body>
     </html>"""

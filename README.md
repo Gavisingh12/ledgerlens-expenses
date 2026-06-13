@@ -1,12 +1,14 @@
-# Flat 4 Shared Expenses
+# LedgerLens Expenses
 
 A small shared-expense web app for Aisha, Rohan, Priya, Meera, Sam, Dev, and trip guests. It imports the original `expenses_export.csv`, detects messy-data anomalies, records expenses/payments in SQLite, and shows group balances plus a "who pays whom" settlement plan.
 
 ## Public app URL
 
-Deployment target: Render or any Python WSGI host that supports `Procfile`.
+Deployment target: GitHub Pages static demo plus Render or any Python WSGI host for the full SQLite app.
 
-Public URL: _to be filled after deployment_.
+Public GitHub Pages URL: https://gavisingh12.github.io/ledgerlens-expenses/
+
+Full SQLite app URL: _to be filled after backend deployment_.
 
 ## Features
 
@@ -50,9 +52,10 @@ python -m unittest discover -s tests -p "test_*.py"
 
 For Render:
 
-- Build command: `pip install -r requirements.txt`
-- Start command: `python run.py`
-- Environment variables:
+- Connect the GitHub repo.
+- Use the included `render.yaml` blueprint, or configure manually:
+  - Build command: `pip install -r requirements.txt`
+  - Start command: `python run.py`
   - `SECRET_KEY`: any long random string
   - `DATABASE_PATH`: optional path for SQLite, defaults to `expenses.db`
 
@@ -62,6 +65,7 @@ I used OpenAI Codex as the primary development collaborator. Details, prompts, a
 
 ## Important files
 
+- [docs/index.html](docs/index.html): GitHub Pages static demo for a public live URL.
 - [app/import_engine.py](app/import_engine.py): CSV parsing, anomaly detection, split math, balances, settlement plan.
 - [app/db.py](app/db.py): relational SQLite schema and persistence.
 - [app/server.py](app/server.py): login, upload, report, expense trace, balances UI.
