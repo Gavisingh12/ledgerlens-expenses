@@ -12,7 +12,7 @@ Full SQLite app URL: _to be filled after backend deployment_.
 
 ## Features
 
-- Login module with seeded users.
+- Login module with simple email/password account creation.
 - Group membership timeline with join/leave dates.
 - CSV import through the app without editing the CSV first.
 - Import report listing every detected anomaly and action taken.
@@ -21,16 +21,11 @@ Full SQLite app URL: _to be filled after backend deployment_.
 - Payments/settlements are recorded separately from expenses.
 - SQLite relational schema only.
 
-## Demo login
+## Login
 
-Use any seeded member name with password `demo123`.
+For the backend app, enter any email and password on `/login`. If the email does not exist, the app creates the account immediately. There is no email verification because this is an assignment demo.
 
-- `Aisha`
-- `Rohan`
-- `Priya`
-- `Meera`
-- `Sam`
-- `Dev`
+For the GitHub Pages demo, the same flow is simulated with browser `localStorage`.
 
 ## Local setup
 
@@ -47,6 +42,12 @@ The app itself uses only the Python standard library. `pytest` is listed in `req
 ```bash
 python -m unittest discover -s tests -p "test_*.py"
 ```
+
+## GitHub-only data option
+
+GitHub Pages cannot run Python, SQLite, or server-side login. The GitHub-only live demo therefore uses `localStorage`, which is simpler than SQLite and works entirely in the browser. It is good for a public portfolio/demo link, but it is not a shared multi-user database and it does not satisfy the assignment's relational database requirement by itself.
+
+The full app keeps SQLite because the assignment says "Use relational DBs only."
 
 ## Deployment
 

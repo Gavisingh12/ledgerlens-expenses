@@ -20,6 +20,7 @@ from .db import (
     load_import_run,
     load_memberships,
     load_payments,
+    register_or_login_user,
     save_import,
     update_expense_status,
 )
@@ -213,19 +214,18 @@ def login(environ, start_response, method: str):
     error = ""
     if method == "POST":
         fields, _ = parse_body(environ)
-        with connect() as conn:
-            row = conn.execute("SELECT * FROM users WHERE name=? AND password=?", (fields.get("name"), fields.get("password"))).fetchone()
+        row = register_or_login_user(fields.get("email", ""), fields.get("password", ""))
         if row:
             cookie = f"session={make_session(row['id'], row['name'])}; Path=/; HttpOnly; SameSite=Lax"
             return redirect(start_response, "/", [("Set-Cookie", cookie)])
-        error = "<p class='bad'>Invalid login. Try any seeded member with password demo123.</p>"
+        error = "<p class='bad'>Use a valid email and password. If this email already exists, the password must match.</p>"
     content = f"""
-    <section class="band"><h2>Login</h2><p class="muted">Seed users: Aisha, Rohan, Priya, Meera, Sam, Dev. Password: demo123.</p></section>
+    <section class="band"><h2>Login or create account</h2><p class="muted">Enter any email and password. There is no email verification for this demo.</p></section>
     {error}
     <form method="post" class="card" style="max-width:420px">
-      <label>Name<input name="name" value="Aisha" required></label><br><br>
+      <label>Email<input name="email" type="email" value="aisha@example.com" required></label><br><br>
       <label>Password<input name="password" type="password" value="demo123" required></label><br><br>
-      <button type="submit">Login</button>
+      <button type="submit">Continue</button>
     </form>
     """
     start_response("200 OK", [("Content-Type", "text/html; charset=utf-8")])

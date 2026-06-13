@@ -32,6 +32,13 @@ class WsgiRouteTest(unittest.TestCase):
         self.assertEqual(status, "200 OK")
         self.assertIn(b"Balance Summary", response)
 
+    def test_email_login_creates_account_without_verification(self):
+        body = b"email=new.user%40example.com&password=simple123"
+        (status, headers), _ = self.call("/login", method="POST", body=body)
+
+        self.assertEqual(status, "303 See Other")
+        self.assertTrue(any(key == "Set-Cookie" and "session=" in value for key, value in headers))
+
     def test_import_upload_redirects_to_report(self):
         boundary = "----codexboundary"
         csv_bytes = Path("data/expenses_export.csv").read_bytes()

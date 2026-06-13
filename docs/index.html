@@ -37,6 +37,8 @@
     .pill { border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; font-size: 12px; display: inline-block; }
     .button { display: inline-block; background: var(--brand); color: white; border-radius: 6px; padding: 10px 13px; margin-top: 8px; }
     input { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+    button { background: var(--brand); color: white; border: 0; border-radius: 6px; padding: 10px 13px; font-weight: 700; cursor: pointer; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
@@ -49,9 +51,20 @@
     </nav>
   </header>
   <main>
+    <section id="login-panel" class="band">
+      <h2>Login or create account</h2>
+      <p class="muted">GitHub Pages cannot run server-side auth, so this public demo stores the account only in this browser with <code>localStorage</code>. Enter any email and password to continue.</p>
+      <form id="login-form" class="card" style="max-width:420px">
+        <label>Email<input id="email" type="email" value="demo@example.com" required></label><br><br>
+        <label>Password<input id="password" type="password" value="demo123" required></label><br><br>
+        <button type="submit">Continue</button>
+      </form>
+    </section>
+
+    <section id="app-panel" class="hidden">
     <section class="band">
       <h2>Shared Expense Import Demo</h2>
-      <p class="muted">Public GitHub Pages demo for the CSV anomaly workflow. The full SQLite/login app is in the repository and runs with <code>python run.py</code>.</p>
+      <p class="muted">Public GitHub Pages demo for the CSV anomaly workflow. The full SQLite/login app is in the repository and runs with <code>python run.py</code>. Signed in as <strong id="signed-in-email"></strong>. <a href="#" id="logout-link">Logout</a></p>
     </section>
 
     <section id="balances" class="grid">
@@ -90,8 +103,11 @@
         <tbody id="anomaly-body"></tbody>
       </table>
     </section>
+    </section>
   </main>
   <script>
+    const accountKey = "ledgerlens-demo-account";
+    const activeKey = "ledgerlens-demo-active-email";
     const balances = [
       ["Aisha", 92723.44], ["Dev", 32189.50], ["Kabir", -2490.00],
       ["Meera", -20521.32], ["Priya", -60546.56], ["Rohan", -56077.56], ["Sam", 14722.50]
@@ -132,6 +148,37 @@
       const text = await file.text();
       const rows = text.trim().split(/\r?\n/).length - 1;
       document.getElementById("upload-result").textContent = `${file.name}: ${rows} data rows read. Use the backend app for the stored SQLite import report.`;
+    });
+
+    function showApp(email) {
+      document.getElementById("login-panel").classList.add("hidden");
+      document.getElementById("app-panel").classList.remove("hidden");
+      document.getElementById("signed-in-email").textContent = email;
+    }
+
+    const activeEmail = localStorage.getItem(activeKey);
+    if (activeEmail) showApp(activeEmail);
+
+    document.getElementById("login-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      if (!email || !password) return;
+      const accounts = JSON.parse(localStorage.getItem(accountKey) || "{}");
+      if (accounts[email] && accounts[email] !== password) {
+        alert("That email already exists in this browser. Use the same password or a different email.");
+        return;
+      }
+      accounts[email] = password;
+      localStorage.setItem(accountKey, JSON.stringify(accounts));
+      localStorage.setItem(activeKey, email);
+      showApp(email);
+    });
+
+    document.getElementById("logout-link").addEventListener("click", event => {
+      event.preventDefault();
+      localStorage.removeItem(activeKey);
+      location.reload();
     });
   </script>
 </body>

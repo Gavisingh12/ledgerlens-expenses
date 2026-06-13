@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+from contextlib import contextmanager
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -20,6 +21,7 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
+    email TEXT UNIQUE,
     password TEXT NOT NULL
 );
 
@@ -105,12 +107,26 @@ def connect() -> sqlite3.Connection:
     return conn
 
 
+@contextmanager
+def db_session():
+    conn = connect()
+    try:
+        yield conn
+        conn.commit()
+    finally:
+        conn.close()
+
+
 def init_db() -> None:
-    with connect() as conn:
+    with db_session() as conn:
         conn.executescript(SCHEMA)
+        columns = [row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()]
+        if "email" not in columns:
+            conn.execute("ALTER TABLE users ADD COLUMN email TEXT")
+        conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email)")
         conn.executemany(
-            "INSERT OR IGNORE INTO users(name, password) VALUES(?, ?)",
-            [(name, "demo123") for name in ("Aisha", "Rohan", "Priya", "Meera", "Sam", "Dev")],
+            "INSERT OR IGNORE INTO users(name, email, password) VALUES(?, ?, ?)",
+            [(name, f"{name.lower()}@demo.local", "demo123") for name in ("Aisha", "Rohan", "Priya", "Meera", "Sam", "Dev")],
         )
         conn.execute("INSERT OR IGNORE INTO groups(name) VALUES(?)", ("Household Expense Ledger",))
         group_id = conn.execute("SELECT id FROM groups WHERE name=?", ("Household Expense Ledger",)).fetchone()["id"]
@@ -131,8 +147,26 @@ def default_group_id(conn: sqlite3.Connection) -> int:
     return conn.execute("SELECT id FROM groups ORDER BY id LIMIT 1").fetchone()["id"]
 
 
+def register_or_login_user(email: str, password: str) -> sqlite3.Row | None:
+    normalized_email = (email or "").strip().lower()
+    if "@" not in normalized_email or not password:
+        return None
+    display_name = normalized_email.split("@", 1)[0].replace(".", " ").replace("_", " ").title() or normalized_email
+    with db_session() as conn:
+        existing = conn.execute("SELECT * FROM users WHERE email=?", (normalized_email,)).fetchone()
+        if existing:
+            if existing["password"] != password:
+                return None
+            return existing
+        conn.execute(
+            "INSERT INTO users(name, email, password) VALUES(?, ?, ?)",
+            (display_name, normalized_email, password),
+        )
+        return conn.execute("SELECT * FROM users WHERE email=?", (normalized_email,)).fetchone()
+
+
 def save_import(filename: str, user_id: int | None, result: ImportResult) -> int:
-    with connect() as conn:
+    with db_session() as conn:
         group_id = default_group_id(conn)
         cur = conn.execute("INSERT INTO import_runs(filename, imported_by) VALUES(?, ?)", (filename, user_id))
         import_run_id = cur.lastrowid
@@ -205,7 +239,7 @@ def save_import(filename: str, user_id: int | None, result: ImportResult) -> int
 
 
 def load_import_run(import_run_id: int) -> sqlite3.Row | None:
-    with connect() as conn:
+    with db_session() as conn:
         return conn.execute("SELECT * FROM import_runs WHERE id=?", (import_run_id,)).fetchone()
 
 
@@ -216,27 +250,27 @@ def load_anomalies(import_run_id: int | None = None) -> list[sqlite3.Row]:
         sql += " WHERE import_run_id=?"
         params = (import_run_id,)
     sql += " ORDER BY source_row, id"
-    with connect() as conn:
+    with db_session() as conn:
         return list(conn.execute(sql, params).fetchall())
 
 
 def load_expenses() -> list[sqlite3.Row]:
-    with connect() as conn:
+    with db_session() as conn:
         return list(conn.execute("SELECT * FROM expenses ORDER BY expense_date, source_row").fetchall())
 
 
 def load_expense_splits(expense_id: int) -> list[sqlite3.Row]:
-    with connect() as conn:
+    with db_session() as conn:
         return list(conn.execute("SELECT * FROM expense_splits WHERE expense_id=? ORDER BY member_name", (expense_id,)).fetchall())
 
 
 def load_payments() -> list[sqlite3.Row]:
-    with connect() as conn:
+    with db_session() as conn:
         return list(conn.execute("SELECT * FROM payments ORDER BY payment_date, source_row").fetchall())
 
 
 def load_memberships() -> list[sqlite3.Row]:
-    with connect() as conn:
+    with db_session() as conn:
         return list(
             conn.execute(
                 """
@@ -253,12 +287,12 @@ def load_memberships() -> list[sqlite3.Row]:
 def update_expense_status(expense_id: int, status: str) -> None:
     if status not in {"included", "excluded_duplicate", "needs_review"}:
         raise ValueError("Invalid status")
-    with connect() as conn:
+    with db_session() as conn:
         conn.execute("UPDATE expenses SET status=? WHERE id=?", (status, expense_id))
 
 
 def expense_trace(expense_id: int) -> dict:
-    with connect() as conn:
+    with db_session() as conn:
         expense = conn.execute("SELECT * FROM expenses WHERE id=?", (expense_id,)).fetchone()
         splits = list(conn.execute("SELECT * FROM expense_splits WHERE expense_id=? ORDER BY member_name", (expense_id,)))
         anomalies = list(
@@ -278,7 +312,7 @@ def balance_summary() -> tuple[dict[str, Decimal], list[tuple[str, str, Decimal]
     from .import_engine import ImportedExpense, ImportedPayment
 
     expenses = []
-    with connect() as conn:
+    with db_session() as conn:
         for row in conn.execute("SELECT * FROM expenses ORDER BY source_row").fetchall():
             splits = {
                 split["member_name"]: money(split["amount_inr"])

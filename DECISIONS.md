@@ -12,6 +12,31 @@ Decision: use Python standard library WSGI plus SQLite.
 
 Why: the assignment emphasizes understanding and traceability. A small dependency-light app makes the importer, schema, and balance math easier to explain live. SQLite satisfies the relational database requirement and deploys easily for this project size.
 
+## Add a GitHub Pages browser-storage demo
+
+Options considered:
+
+- Replace SQLite with `localStorage`.
+- Use IndexedDB in the browser.
+- Use SQLite compiled to WebAssembly in the browser.
+- Keep SQLite for the backend and use `localStorage` only for the GitHub Pages demo.
+
+Decision: keep SQLite for the full assignment app and use `localStorage` only in the GitHub Pages demo.
+
+Why: GitHub Pages is static hosting and cannot run Python or a server database. `localStorage` is the simplest GitHub-only option for a portfolio demo, but it is browser-local and not a true shared relational database. The backend app remains the source of truth for the assignment's relational DB requirement.
+
+## Simple email signup
+
+Options considered:
+
+- Seeded demo users only.
+- Email/password signup with email verification.
+- Email/password signup without verification.
+
+Decision: allow users to enter any email and password. If the email is new, the app creates the account; if it exists, the password must match.
+
+Why: the assignment only needs a login module, not production identity management. Avoiding email delivery keeps setup simple and makes the demo easier to run.
+
 ## Keep payments separate from expenses
 
 Options considered:

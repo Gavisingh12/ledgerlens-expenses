@@ -39,6 +39,7 @@ Relational database: SQLite.
 
 - `id` primary key
 - `name` unique
+- `email` unique
 - `password`
 
 ### `groups`
