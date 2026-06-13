@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+expenses.db
+.pytest_cache/
+server.*.log
