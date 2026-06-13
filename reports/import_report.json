@@ -1,0 +1,413 @@
+{
+  "import_run": {
+    "id": 2,
+    "filename": "expenses_export.csv",
+    "imported_by": null,
+    "created_at": "2026-06-13 12:53:57"
+  },
+  "anomalies": [
+    {
+      "id": 39,
+      "import_run_id": 2,
+      "source_row": 6,
+      "code": "duplicate_exact",
+      "field": "description",
+      "severity": "warning",
+      "message": "This row matches an earlier expense.",
+      "action": "Excluded duplicate from balances."
+    },
+    {
+      "id": 40,
+      "import_run_id": 2,
+      "source_row": 7,
+      "code": "formatted_amount",
+      "field": "amount",
+      "severity": "warning",
+      "message": "Amount '1,200' contains separators.",
+      "action": "Removed commas."
+    },
+    {
+      "id": 41,
+      "import_run_id": 2,
+      "source_row": 9,
+      "code": "name_normalized",
+      "field": "paid_by",
+      "severity": "warning",
+      "message": "'priya' was normalized to 'Priya'.",
+      "action": "Used canonical member name."
+    },
+    {
+      "id": 42,
+      "import_run_id": 2,
+      "source_row": 10,
+      "code": "amount_rounded",
+      "field": "amount",
+      "severity": "warning",
+      "message": "Amount 899.995 has more than two decimals.",
+      "action": "Rounded to 900.00."
+    },
+    {
+      "id": 43,
+      "import_run_id": 2,
+      "source_row": 11,
+      "code": "name_normalized",
+      "field": "paid_by",
+      "severity": "warning",
+      "message": "'Priya S' was normalized to 'Priya'.",
+      "action": "Used canonical member name."
+    },
+    {
+      "id": 44,
+      "import_run_id": 2,
+      "source_row": 13,
+      "code": "missing_payer",
+      "field": "paid_by",
+      "severity": "error",
+      "message": "No payer supplied.",
+      "action": "Skipped row until a user supplies payer."
+    },
+    {
+      "id": 45,
+      "import_run_id": 2,
+      "source_row": 14,
+      "code": "settlement_detected",
+      "field": "description",
+      "severity": "warning",
+      "message": "Row appears to be money paid between members, not a shared expense.",
+      "action": "Recorded as a payment/settlement."
+    },
+    {
+      "id": 46,
+      "import_run_id": 2,
+      "source_row": 15,
+      "code": "percentage_total_not_100",
+      "field": "split_details",
+      "severity": "warning",
+      "message": "Percentages total 110%.",
+      "action": "Normalized percentages to 100% before allocating amount."
+    },
+    {
+      "id": 47,
+      "import_run_id": 2,
+      "source_row": 16,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'01/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 48,
+      "import_run_id": 2,
+      "source_row": 17,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'03/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 49,
+      "import_run_id": 2,
+      "source_row": 18,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'05/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 50,
+      "import_run_id": 2,
+      "source_row": 19,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'08/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 51,
+      "import_run_id": 2,
+      "source_row": 20,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'09/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 52,
+      "import_run_id": 2,
+      "source_row": 20,
+      "code": "foreign_currency_converted",
+      "field": "currency",
+      "severity": "warning",
+      "message": "540.00 USD is not INR.",
+      "action": "Converted at documented rate 1 USD = 83 INR."
+    },
+    {
+      "id": 53,
+      "import_run_id": 2,
+      "source_row": 21,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'10/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 54,
+      "import_run_id": 2,
+      "source_row": 21,
+      "code": "foreign_currency_converted",
+      "field": "currency",
+      "severity": "warning",
+      "message": "84.00 USD is not INR.",
+      "action": "Converted at documented rate 1 USD = 83 INR."
+    },
+    {
+      "id": 55,
+      "import_run_id": 2,
+      "source_row": 22,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'10/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 56,
+      "import_run_id": 2,
+      "source_row": 22,
+      "code": "active_member_missing_from_household_expense",
+      "field": "split_with",
+      "severity": "warning",
+      "message": "Active household member(s) missing: Meera.",
+      "action": "Kept the sheet's explicit participant list and surfaced for review."
+    },
+    {
+      "id": 57,
+      "import_run_id": 2,
+      "source_row": 23,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'11/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 58,
+      "import_run_id": 2,
+      "source_row": 23,
+      "code": "foreign_currency_converted",
+      "field": "currency",
+      "severity": "warning",
+      "message": "150.00 USD is not INR.",
+      "action": "Converted at documented rate 1 USD = 83 INR."
+    },
+    {
+      "id": 59,
+      "import_run_id": 2,
+      "source_row": 23,
+      "code": "name_normalized",
+      "field": "split_with",
+      "severity": "warning",
+      "message": "'Dev's friend Kabir' was normalized to 'Kabir'.",
+      "action": "Used canonical member name."
+    },
+    {
+      "id": 60,
+      "import_run_id": 2,
+      "source_row": 23,
+      "code": "guest_participant",
+      "field": "split_with",
+      "severity": "warning",
+      "message": "Kabir appears only in a trip expense.",
+      "action": "Kept as a guest participant for that row only."
+    },
+    {
+      "id": 61,
+      "import_run_id": 2,
+      "source_row": 24,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'11/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 62,
+      "import_run_id": 2,
+      "source_row": 25,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'11/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 63,
+      "import_run_id": 2,
+      "source_row": 25,
+      "code": "duplicate_conflict",
+      "field": "amount",
+      "severity": "warning",
+      "message": "Possible duplicate of row 24 with different amount.",
+      "action": "Excluded later row pending review."
+    },
+    {
+      "id": 64,
+      "import_run_id": 2,
+      "source_row": 26,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'12/03/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 65,
+      "import_run_id": 2,
+      "source_row": 26,
+      "code": "negative_amount",
+      "field": "amount",
+      "severity": "warning",
+      "message": "Amount is negative.",
+      "action": "Treated as a refund/credit."
+    },
+    {
+      "id": 66,
+      "import_run_id": 2,
+      "source_row": 26,
+      "code": "foreign_currency_converted",
+      "field": "currency",
+      "severity": "warning",
+      "message": "-30.00 USD is not INR.",
+      "action": "Converted at documented rate 1 USD = 83 INR."
+    },
+    {
+      "id": 67,
+      "import_run_id": 2,
+      "source_row": 27,
+      "code": "incomplete_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'Mar 14' has no year.",
+      "action": "Inferred 2026 from the assignment period."
+    },
+    {
+      "id": 68,
+      "import_run_id": 2,
+      "source_row": 27,
+      "code": "name_normalized",
+      "field": "paid_by",
+      "severity": "warning",
+      "message": "'rohan' was normalized to 'Rohan'.",
+      "action": "Used canonical member name."
+    },
+    {
+      "id": 69,
+      "import_run_id": 2,
+      "source_row": 28,
+      "code": "missing_currency",
+      "field": "currency",
+      "severity": "warning",
+      "message": "Currency is blank.",
+      "action": "Defaulted to INR."
+    },
+    {
+      "id": 70,
+      "import_run_id": 2,
+      "source_row": 31,
+      "code": "zero_amount",
+      "field": "amount",
+      "severity": "warning",
+      "message": "Expense amount is zero.",
+      "action": "Skipped as a no-op."
+    },
+    {
+      "id": 71,
+      "import_run_id": 2,
+      "source_row": 32,
+      "code": "percentage_total_not_100",
+      "field": "split_details",
+      "severity": "warning",
+      "message": "Percentages total 110%.",
+      "action": "Normalized percentages to 100% before allocating amount."
+    },
+    {
+      "id": 72,
+      "import_run_id": 2,
+      "source_row": 34,
+      "code": "ambiguous_slash_date",
+      "field": "date",
+      "severity": "warning",
+      "message": "'04/05/2026' could be DD/MM/YYYY or MM/DD/YYYY.",
+      "action": "Parsed as DD/MM/YYYY because the sheet is India/INR first."
+    },
+    {
+      "id": 73,
+      "import_run_id": 2,
+      "source_row": 34,
+      "code": "active_member_missing_from_household_expense",
+      "field": "split_with",
+      "severity": "warning",
+      "message": "Active household member(s) missing: Sam.",
+      "action": "Kept the sheet's explicit participant list and surfaced for review."
+    },
+    {
+      "id": 74,
+      "import_run_id": 2,
+      "source_row": 36,
+      "code": "inactive_member_in_split",
+      "field": "split_with",
+      "severity": "warning",
+      "message": "Meera was not an active member on 2026-04-02.",
+      "action": "Removed from charge split before calculating balances."
+    },
+    {
+      "id": 75,
+      "import_run_id": 2,
+      "source_row": 38,
+      "code": "settlement_detected",
+      "field": "description",
+      "severity": "warning",
+      "message": "Row appears to be money paid between members, not a shared expense.",
+      "action": "Recorded as a payment/settlement."
+    },
+    {
+      "id": 76,
+      "import_run_id": 2,
+      "source_row": 42,
+      "code": "split_type_detail_conflict",
+      "field": "split_details",
+      "severity": "warning",
+      "message": "split_type is equal but split_details were supplied.",
+      "action": "Ignored details and split equally."
+    }
+  ],
+  "summary": {
+    "total_anomalies": 38,
+    "by_code": {
+      "duplicate_exact": 1,
+      "formatted_amount": 1,
+      "name_normalized": 4,
+      "amount_rounded": 1,
+      "missing_payer": 1,
+      "settlement_detected": 2,
+      "percentage_total_not_100": 2,
+      "ambiguous_slash_date": 12,
+      "foreign_currency_converted": 4,
+      "active_member_missing_from_household_expense": 2,
+      "guest_participant": 1,
+      "duplicate_conflict": 1,
+      "negative_amount": 1,
+      "incomplete_date": 1,
+      "missing_currency": 1,
+      "zero_amount": 1,
+      "inactive_member_in_split": 1,
+      "split_type_detail_conflict": 1
+    }
+  }
+}
